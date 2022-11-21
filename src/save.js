@@ -16,11 +16,11 @@ const save = (data, opts) => {
 	switch (outputType) {
 		case '.csv': {
 			const csvWriter = createArrayCsvWriter({
-				header: ['', ...langs],
+				header: ['', ...opts.langs],
 				path: savePath
 			});
 			const csv = Object.values(data).map((data) => {
-				const row = langs.map((lang) => {
+				const row = opts.langs.map((lang) => {
 					const result = data.languages[lang];
 					if (result == null) {
 						return '';

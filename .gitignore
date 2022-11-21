@@ -1,4 +1,5 @@
-./outs
+out/
+test/
 
 # Logs
 logs

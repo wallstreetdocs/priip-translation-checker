@@ -10,6 +10,7 @@ const allLangs = ['BR', 'BG', 'HR', 'CS', 'DA', 'NL', 'EN', 'ET', 'FI', 'FR', 'D
  * 
  * @param {object} opts Options
  * @param {string} opts.readFromFile Read the input from a JSON output file instead of doing calls to PriipCloud. Useful for mapping to CSV output
+ * @param {string} opts.outputPath The file to save the output to
  * @param {string} opts.accessToken Access token to use for calling the server
  * @param {boolean} opts.showNonErrors Show "nulls" in the JSON output
  * @param {null|string[]} opts.langs An array of the language keys you want to find, leave nullish for all
