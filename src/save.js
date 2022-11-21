@@ -36,7 +36,9 @@ const save = (data, opts) => {
 			return fs.promises.writeFile(savePath, JSON.stringify(data), 'utf-8');
 		}
 		default: {
-			console.warn(`${outputType} was not a recognised output type, so saving as CSV instead`);
+			if (outputType !== '.json') {
+				console.warn(`${outputType} was not a recognised output type, so saving as CSV instead`);
+			}
 			return fs.promises.writeFile(savePath, JSON.stringify(data), 'utf-8');
 		}
 	}
