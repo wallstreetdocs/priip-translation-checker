@@ -11,14 +11,14 @@ const allLangs = ['BG', 'HR', 'CS', 'DA', 'NL', 'EN', 'ET', 'FI', 'FR', 'DE', 'E
  * @param {object} opts Options
  * @param {string} opts.readFromFile Read the input from a JSON output file instead of doing calls to PriipCloud. Useful for mapping to CSV output
  * @param {number[]} opts.poolIds The pool IDs to search through for keys
- * @param {string} opts.outputPath The file to save the output to
+ * @param {string} opts.outputPath The file to save the output to, can either either a ".json" extension or a ".csv" extension
  * @param {string} opts.accessToken Access token to use for calling the server
  * @param {boolean} opts.showNonErrors Show "nulls" in the JSON output
  * @param {null|string[]} opts.langs An array of the language keys you want to find, leave nullish for all
  * @param {null|string[]} opts.filterTkNames An array of the TK names you want to find, leave nullish for all
  * @param {null|number[]} opts.filterTkIds An array of the TK IDs you want to find, leave nullish for all
  * @param {string} opts.origin The origin to use for PriipCloud
- * @param {string} opts.correctLang The language to use as "correct" to compare the other languages against
+ * @param {string} opts.correctLang The language to use as "correct" to compare the other languages against. Leave nullish to use master
  * @param {boolean} opts.ignoreFormatting Whether to ignore formatting tags in comparison
  * @param {{isCancellationRequested: boolean}} opts.cancellationToken The origin to use for PriipCloud
  * @returns 

@@ -10,6 +10,6 @@ checkTranslations({
 	langs: null,
 	outputPath: './out/out.csv',
 	showNonErrors: false,
-	correct: 'EN',
+	correctLang: 'EN',
 	ignoreFormatting: true,
 }).then(console.log).catch(console.error);
