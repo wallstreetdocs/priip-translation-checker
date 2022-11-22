@@ -16,7 +16,7 @@ const save = (data, opts) => {
 	switch (outputType) {
 		case '.csv': {
 			const csvWriter = createArrayCsvWriter({
-				header: ['', ...opts.langs],
+				header: ['Pool', 'ID', 'Name', 'Last Modified', ...opts.langs],
 				path: savePath
 			});
 			const csv = Object.values(data).map((data) => {
@@ -27,8 +27,8 @@ const save = (data, opts) => {
 					}
 					return `${result.location} | ${result.message}`;
 				});
-				return [data.name, ...row];
-				
+				const modified = new Date(data.lastModified).toISOString();
+				return [data.poolId, data.id, data.name, modified, ...row];
 			});
 			return csvWriter.writeRecords(csv);
 		}

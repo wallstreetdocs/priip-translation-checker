@@ -5,15 +5,15 @@ class EqualsError extends Error {
 
 	/**
 	 * 
-	 * @param {Item} key 
+	 * @param {Item} correct 
 	 * @param {Item} lang 
 	 * @param {string} message 
 	 */
-	constructor(key, lang, message) {
+	constructor(correct, lang, message) {
 
 		super(message);
 
-		this.key = key;
+		this.correct = correct;
 		this.lang = lang;
 
 	}
@@ -28,11 +28,12 @@ class Item {
 	 * @param {string} lang 
 	 * @param {Conditional} parent 
 	 */
-	constructor(el, lang, parent) {
+	constructor(el, lang, parent, opts) {
 
 		this.el = el;
 		this.lang = lang;
 		this.parent = parent;
+		this.opts = opts;
 
 	}
 
@@ -69,12 +70,39 @@ class Item {
 	 */
 	static sort(a, b) {
 		if (a.lang == null && b.lang != null) {
-			return {key: a, lang: b};
+			return {correct: a, lang: b};
 		}
 		if (b.lang == null && a.lang != null) {
-			return {key: b, lang: a};
+			return {correct: b, lang: a};
 		}
 		throw new Error('Could not sort out the two items');
+	}
+
+	/**
+	 * 
+	 * @param {libxmljs.Element} el 
+	 */
+	static getNodeType(el) {
+
+		if (!(el instanceof libxmljs.Element)) {
+			return;
+		}
+
+		if (el?.name?.() === 'wsd-basicconditional') {
+			return 'conditional';
+		}
+			
+
+		if (el.childNodes().length === 0) {
+			return;
+		}
+
+		if (el.name()?.startsWith?.('wsd-')) {
+			return 'display';
+		}
+
+		return 'formatting';
+
 	}
 
 }
@@ -87,31 +115,36 @@ class Parent extends Item {
 	 * @param {string} lang 
 	 * @param {Conditional} parent 
 	 */
-	constructor(el, lang, parent) {
+	constructor(el, lang, parent, opts) {
 
-		super(el, lang, parent);
+		super(el, lang, parent, opts);
 
 		/** @type {Item[]} */
 		this.children = [];
 
-		for (const child of el.childNodes()) {
-
-			if (child?.name?.() === 'wsd-basicconditional') {
-
-				this.children.push(new Conditional(child, this.lang, this));
-
-			} else if (child instanceof libxmljs.Element) {
-
-				if (child.childNodes().length === 0) {
-					continue;
-				}
-
-				if (child.name()?.startsWith?.('wsd-')) {
-					this.children.push(new Display(child, this.lang, this));
+		function* childGenerator(el) {
+			for (const child of el.childNodes()) {
+				if (opts.ignoreFormatting && Item.getNodeType(child) === 'formatting') {
+					const newIterator = childGenerator(child);
+					yield* newIterator;
 				} else {
-					this.children.push(new Formatting(child, this.lang, this));
+					yield child;
 				}
+			}
+		}
 
+		for (const child of childGenerator(el)) {
+
+			switch (Item.getNodeType(child)) {
+				case 'display':
+					this.children.push(new Display(child, this.lang, this, this.opts));
+					break;
+				case 'conditional':
+					this.children.push(new Conditional(child, this.lang, this, this.opts));
+					break;
+				case 'formatting':
+					this.children.push(new Formatting(child, this.lang, this, this.opts));
+					break;
 			}
 
 		}
@@ -136,33 +169,33 @@ class Parent extends Item {
 	 */
 	equals(cond) {
 
-		const {key, lang} = Item.sort(this, cond);
+		const {correct, lang} = Item.sort(this, cond);
 
-		if (key.id !== lang.id) {
-			throw new EqualsError(key, lang, `Key ID '${key.id}' did not match lang ID ${lang.id}`);
+		if (correct.id !== lang.id) {
+			throw new EqualsError(correct, lang, `Correct ID '${correct.id}' did not match lang ID ${lang.id}`);
 		}
 
-		for (const keyChild of key.children) {
+		for (const correctChild of correct.children) {
 
-			const langChild = lang.getChildById(keyChild.id);
+			const langChild = lang.getChildById(correctChild.id);
 
 			if (!langChild) {
-				throw new EqualsError(key, lang, `Language had a missing child with id '${keyChild.id}'`);
+				throw new EqualsError(correct, lang, `Language had a missing child with id '${correctChild.id}'`);
 			}
 
-			keyChild.equals(langChild)
+			correctChild.equals(langChild)
 
 		}
 
 		for (const langChild of lang.children) {
 
-			const keyChild = key.getChildById(langChild.id);
+			const correctChild = correct.getChildById(langChild.id);
 
-			if (!keyChild) {
-				throw new EqualsError(key, lang, `Language had an extra child with id '${langChild.id}'`);
+			if (!correctChild) {
+				throw new EqualsError(correct, lang, `Language had an extra child with id '${langChild.id}'`);
 			}
 
-			langChild.equals(keyChild);
+			langChild.equals(correctChild);
 
 		}
 
@@ -178,9 +211,9 @@ class Formatting extends Parent {
 	 * @param {string} lang 
 	 * @param {Conditional} parent 
 	 */
-	constructor(el, lang, parent) {
+	constructor(el, lang, parent, opts) {
 
-		super(el, lang, parent);
+		super(el, lang, parent, opts);
 
 		this.id = '_html_' + el.name();
 
@@ -196,7 +229,7 @@ class Conditional extends Parent {
 	 * @param {string} lang 
 	 * @param {Conditional} parent 
 	 */
-	constructor(el, lang, parent) {
+	constructor(el, lang, parent, opts) {
 
 		const dataIdx = el.attr('data-idx')?.value();
 
@@ -208,7 +241,7 @@ class Conditional extends Parent {
 			id = null;
 		}
 
-		super(el, lang, parent);
+		super(el, lang, parent, opts);
 
 		this.id = id;
 
@@ -224,9 +257,9 @@ class Display extends Item {
 	 * @param {string} lang 
 	 * @param {Conditional} parent 
 	 */
-	constructor(el, lang, parent) {
+	constructor(el, lang, parent, opts) {
 
-		super(el, lang, parent);
+		super(el, lang, parent, opts);
 
 		this.id = el.attr('data-tag-name')?.value();
 
@@ -242,10 +275,10 @@ class Display extends Item {
 	 */
 	equals(disp) {
 
-		const {key, lang} = Item.sort(this, disp);
+		const {correct, lang} = Item.sort(this, disp);
 
-		if (key.id !== lang.id) {
-			throw new EqualsError(key, lang, `Key ID '${key.id}' did not match lang ID ${lang.id}`);
+		if (correct.id !== lang.id) {
+			throw new EqualsError(correct, lang, `Correct ID '${correct.id}' did not match lang ID ${lang.id}`);
 		}
 
 	}

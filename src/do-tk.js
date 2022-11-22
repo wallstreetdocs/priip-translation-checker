@@ -6,12 +6,14 @@ const doTk = (input, opts) => {
 
 	/** @type {string} */
 	const name = input.name;
-	const id = input.translationKeyId;
-	const text = input.text;
+	const id = input.id;
+	const poolId = input.poolId;
+	const lastModified = input.lastModified;
+	const correctXml = input.languages[opts.correctLang] ?? input.master;
 
-	const keyDoc = libxmljs.parseXmlString(text);
+	const correctDoc = libxmljs.parseXmlString(correctXml);
 
-	const key = new Conditional(keyDoc.root(), null);
+	const correct = new Conditional(correctDoc.root(), null, null, opts);
 
 	let langs = Object.entries(input.languages).map(([lang, xml]) => {
 
@@ -19,8 +21,8 @@ const doTk = (input, opts) => {
 		let error;
 		try {
 			const langDoc = libxmljs.parseXmlString(xml);
-			const out = new Conditional(langDoc.root(), lang);	
-			key.equals(out);
+			const out = new Conditional(langDoc.root(), lang, null, opts);
+			correct.equals(out);
 		} catch (e) {
 			if (e instanceof EqualsError) {
 				error = e;
@@ -51,7 +53,7 @@ const doTk = (input, opts) => {
 		if (lang.error instanceof EqualsError) {
 			return [key, {
 				message: lang.error.message,
-				location: lang.error.key.getChainText(),
+				location: lang.error.correct.getChainText(),
 			}];
 		}
 		return [key, {
@@ -63,7 +65,9 @@ const doTk = (input, opts) => {
 	return {
 		name,
 		id,
-		languages
+		poolId,
+		lastModified,
+		languages,
 	};
 
 }
