@@ -180,7 +180,7 @@ class Parent extends Item {
 			const langChild = lang.getChildById(correctChild.id);
 
 			if (!langChild) {
-				throw new EqualsError(correct, lang, `Language had a missing child with id '${correctChild.id}'`);
+				throw new EqualsError(correct, lang, `Missing child with id '${correctChild.id}'`);
 			}
 
 			correctChild.equals(langChild)
@@ -192,7 +192,7 @@ class Parent extends Item {
 			const correctChild = correct.getChildById(langChild.id);
 
 			if (!correctChild) {
-				throw new EqualsError(correct, lang, `Language had an extra child with id '${langChild.id}'`);
+				throw new EqualsError(correct, lang, `Extra child with id '${langChild.id}'`);
 			}
 
 			langChild.equals(correctChild);

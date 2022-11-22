@@ -4,7 +4,7 @@ const { doTk } = require('./do-tk.js');
 const { getAllTks } = require('./get-all-tks.js');
 const { save } = require('./save.js');
 
-const allLangs = ['BG', 'HR', 'CS', 'DA', 'NL', 'EN', 'ET', 'FI', 'FR', 'DE', 'EL', 'HU', 'IT', 'LT', 'NO', 'PL', 'PT', 'RO', 'RU', 'SK', 'SL', 'ES', 'SV', 'SE'];
+const allLangs = ['BG', 'HR', 'CS', 'DA', 'NL', 'EN', 'ET', 'FI', 'FR', 'DE', 'EL', 'HU', 'IT', 'LT', 'NO', 'PL', 'PT', 'RO', 'RU', 'SK', 'SL', 'ES', 'SV'];
 
 /**
  * 
@@ -62,7 +62,10 @@ const checkTranslations = async (opts) => {
 
 		out.sort((a, b) => a.name.localeCompare(b.name));
 
-		const output = Object.fromEntries(out.map((item) => ([item.name, item])));
+		const output = {
+			correctLang: opts.correctLang,
+			keys: Object.fromEntries(out.map((item) => ([item.name, item]))),
+		};
 
 		await save(output, opts);
 

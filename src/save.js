@@ -19,17 +19,18 @@ const save = (data, opts) => {
 				header: ['Pool', 'ID', 'Name', 'Last Modified', ...opts.langs],
 				path: savePath
 			});
-			const csv = Object.values(data).map((data) => {
+			const csv = Object.values(data.keys).map((key) => {
 				const row = opts.langs.map((lang) => {
-					const result = data.languages[lang];
+					const result = key.languages[lang];
 					if (result == null) {
 						return '';
 					}
 					return `${result.location} | ${result.message}`;
 				});
-				const modified = new Date(data.lastModified).toISOString();
-				return [data.poolId, data.id, data.name, modified, ...row];
+				const modified = new Date(key.lastModified).toISOString();
+				return [key.poolId, key.id, key.name, modified, ...row];
 			});
+			csv.push([], ['Correct:', data.correctLang ?? 'Master']);
 			return csvWriter.writeRecords(csv);
 		}
 		case '.json': {
