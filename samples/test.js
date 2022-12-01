@@ -12,4 +12,5 @@ checkTranslations({
 	showNonErrors: false,
 	correctLang: 'EN',
 	ignoreFormatting: true,
+	checkEditedSince: new Date('2022-12-01T13:49:00Z'),
 }).then(console.log).catch(console.error);

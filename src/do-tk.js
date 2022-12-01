@@ -9,21 +9,24 @@ const doTk = (input, opts) => {
 	const id = input.id;
 	const poolId = input.poolId;
 	const lastModified = input.lastModified;
-	const correctXml = input.languages[opts.correctLang] ?? input.master;
+	const correctXml = input.languages[opts.correctLang]?.xml || input.master;
 
 	const correctDoc = libxmljs.parseXmlString(correctXml);
 
 	const correct = new Conditional(correctDoc.root(), null, null, opts);
 
-	let langs = Object.entries(input.languages).map(([lang, xml]) => {
+	let langs = Object.entries(input.languages).map(([lang, languageData]) => {
 
 		/** @type {Error} */
 		let error;
 		try {
-			if (xml == null) {
+			if (languageData == null) {
 				throw new EqualsError(correct, lang, 'Translation was empty');
 			}
-			const langDoc = libxmljs.parseXmlString(xml);
+			if (opts?.checkEditedSince && languageData.lastModified < opts.checkEditedSince) {
+				throw new EqualsError(correct, lang, `Not been edited since ${new Date(languageData.lastModified).toISOString()}`);
+			}
+			const langDoc = libxmljs.parseXmlString(languageData.xml);
 			const out = new Conditional(langDoc.root(), lang, null, opts);
 			correct.equals(out);
 		} catch (e) {
