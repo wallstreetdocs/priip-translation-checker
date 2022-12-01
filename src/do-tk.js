@@ -20,7 +20,7 @@ const doTk = (input, opts) => {
 		/** @type {Error} */
 		let error;
 		try {
-			if (languageData == null) {
+			if (languageData == null || !languageData.xml) {
 				throw new EqualsError(correct, lang, 'Translation was empty');
 			}
 			if (opts?.checkEditedSince && languageData.lastModified < opts.checkEditedSince) {
