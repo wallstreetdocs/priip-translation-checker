@@ -55,7 +55,11 @@ const getAllTks = async (opts, callback) => {
 				return;
 			}
 		
-			const languages = Object.fromEntries(resp.data.map((result, i) => ([opts.langs[i], `<root>${result?.text ?? ''}</root>`])));
+			const languages = Object.fromEntries(resp.data.map((result, i) => {
+				const lang = opts.langs[i];
+				const xml = result?.text ? `<root>${result.text}</root>` : null;
+				return [lang, xml];
+			}));
 	
 			const lastModified = item.lastModified;
 	

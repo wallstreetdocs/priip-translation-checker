@@ -20,6 +20,9 @@ const doTk = (input, opts) => {
 		/** @type {Error} */
 		let error;
 		try {
+			if (xml == null) {
+				throw new EqualsError(correct, lang, 'Translation was empty');
+			}
 			const langDoc = libxmljs.parseXmlString(xml);
 			const out = new Conditional(langDoc.root(), lang, null, opts);
 			correct.equals(out);
