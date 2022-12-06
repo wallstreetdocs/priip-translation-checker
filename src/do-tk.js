@@ -9,13 +9,16 @@ const doTk = (input, opts) => {
 	const id = input.id;
 	const poolId = input.poolId;
 	const lastModified = input.lastModified;
-	const correctXml = input.languages[opts.correctLang]?.xml || input.master;
+	const correctXml = opts.correctLang == null ? input.master : input.languages[opts.correctLang]?.xml;
+	if (correctXml == null) {
+		throw new Error(`Could not find an xml for correct language ${opts.correctLang} to compare against`);
+	}
 
 	const correctDoc = libxmljs.parseXmlString(correctXml);
 
 	const correct = new Conditional(correctDoc.root(), null, null, opts);
 
-	let langs = Object.entries(input.languages).map(([lang, languageData]) => {
+	let langs = Object.entries(input.languages).filter(([lang]) => opts.langs.includes(lang)).map(([lang, languageData]) => {
 
 		/** @type {Error} */
 		let error;
@@ -47,7 +50,7 @@ const doTk = (input, opts) => {
 
 	});
 
-	if (!opts.showNonErrors) {
+	if (!opts.showNonErrorsInJsonOutputAsNull) {
 		langs = langs.filter(x => x.error != null);
 	}
 

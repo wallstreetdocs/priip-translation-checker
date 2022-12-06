@@ -1,24 +1,11 @@
 
-const fs = require('fs');
-const path = require('path');
-const { createArrayCsvWriter } = require('csv-writer');
+const { createArrayCsvStringifier } = require('csv-writer');
 
-const save = (data, opts) => {
+const getOutputString = async (data, opts) => {
 
-	const savePath = opts.outputPath;
-
-	if (!savePath) {
-		return;
-	}
-
-	const outputType = path.extname(savePath);
-
-	switch (outputType) {
-		case '.csv': {
-			const csvWriter = createArrayCsvWriter({
-				header: ['Pool', 'ID', 'Name', 'Last Modified', ...opts.langs],
-				path: savePath
-			});
+	switch (opts.fileType) {
+		case 'csv': {
+			const csvWriter = createArrayCsvStringifier({});
 			const csv = Object.values(data.keys).map((key) => {
 				const row = opts.langs.map((lang) => {
 					const result = key.languages[lang];
@@ -30,20 +17,29 @@ const save = (data, opts) => {
 				const modified = new Date(key.lastModified).toISOString();
 				return [key.poolId, key.id, key.name, modified, ...row];
 			});
-			csv.push([], ['Correct:', data.correctLang ?? 'Master']);
-			return csvWriter.writeRecords(csv);
+			csv.unshift(['Pool', 'ID', 'Name', 'Last Modified', ...opts.langs]);
+			csv.push([]);
+			csv.push(['Correct:', data.correctLang ?? 'Master']);
+			return csvWriter.stringifyRecords(csv);
 		}
-		case '.json': {
-			return fs.promises.writeFile(savePath, JSON.stringify(data), 'utf-8');
-		}
-		default: {
-			if (outputType !== '.json') {
-				console.warn(`${outputType} was not a recognised output type, so saving as CSV instead`);
-			}
-			return fs.promises.writeFile(savePath, JSON.stringify(data), 'utf-8');
+		case 'json': {
+			return JSON.stringify(data);
 		}
 	}
 
+	if (opts.fileType !== 'json') {
+		console.warn(`${opts.fileType} was not a recognised output type, so saving as JSON instead`);
+	}
+	return JSON.stringify(data);
+
 }
 
-module.exports.save = save;
+const getOutput = async (data, opts) => {
+	const outputString = await getOutputString(data, opts);
+	if (opts.outputEncoding == null) {
+		return outputString;
+	}
+	return Buffer.from(outputString, opts.outputEncoding);
+}
+
+module.exports.getOutput = getOutput;
