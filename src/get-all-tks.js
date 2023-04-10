@@ -39,7 +39,7 @@ const getAllTks = async (opts, callback) => {
 	
 			const name = item.name;
 			const id = item.translationKeyId;
-			const master = `<root>${item.text ?? ''}</root>`;
+			const master = `<root>${item.text || ''}</root>`;
 	
 			if (opts.cancellationToken.isCancellationRequested) {
 				return;
@@ -61,7 +61,7 @@ const getAllTks = async (opts, callback) => {
 					return [lang, null];
 				}
 				const xml = result.text ? `<root>${result.text}</root>` : null;
-				const lastModified = result?.lastModified ?? null;
+				const lastModified = (result ? result.lastModified : null) || null; // Stupid line because "?." and "??" aren't supported
 				return [lang, {xml, lastModified}];
 			}));
 	

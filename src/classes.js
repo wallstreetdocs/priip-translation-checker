@@ -59,7 +59,7 @@ class Item {
 
 		const chain = this.getChain();
 
-		return chain.map(item => item.id ?? 'ROOT').join('->');
+		return chain.map(item => item.id || 'ROOT').join('->');
 
 	}
 
@@ -88,7 +88,7 @@ class Item {
 			return;
 		}
 
-		if (el?.name?.() === 'wsd-basicconditional') {
+		if (typeof el.name === 'function' && el.name() === 'wsd-basicconditional') {
 			return 'conditional';
 		}
 			
@@ -97,7 +97,11 @@ class Item {
 			return;
 		}
 
-		if (el.name()?.startsWith?.('wsd-')) {
+		if (typeof el.name === 'function') {
+			const name = el.name();
+			if (typeof name === 'string' && name.startsWith('wsd-')) {
+
+			}
 			return 'display';
 		}
 
@@ -231,7 +235,7 @@ class Conditional extends Parent {
 	 */
 	constructor(el, lang, parent, opts) {
 
-		const dataIdx = el.attr('data-idx')?.value();
+		const dataIdx = typeof el.attr === 'function' ? el.attr('data-idx').value() : undefined;
 
 		let id = Number.parseInt(dataIdx);
 		if (isNaN(id)) {
@@ -261,7 +265,7 @@ class Display extends Item {
 
 		super(el, lang, parent, opts);
 
-		this.id = el.attr('data-tag-name')?.value();
+		this.id = typeof el.attr === 'function' ? el.attr('data-tag-name').value() : undefined;
 
 		if (!this.id) {
 			throw new Error('Found a display tag without a name');

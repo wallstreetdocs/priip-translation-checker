@@ -1,7 +1,7 @@
 
 const { createArrayCsvStringifier } = require('csv-writer');
 
-const getOutputString = async (data, opts) => {
+const getOutput = async (data, opts) => {
 
 	switch (opts.fileType) {
 		case 'csv': {
@@ -19,27 +19,28 @@ const getOutputString = async (data, opts) => {
 			});
 			csv.unshift(['Pool', 'ID', 'Name', 'Last Modified', ...opts.langs]);
 			csv.push([]);
-			csv.push(['Correct:', data.correctLang ?? 'Master']);
-			return csvWriter.stringifyRecords(csv);
+			csv.push(['Correct:', data.correctLang || 'Master']);
+			return {
+				type: 'csv',
+				data: csvWriter.stringifyRecords(csv)
+			};
 		}
 		case 'json': {
-			return JSON.stringify(data);
+			return {
+				type: 'json',
+				data: JSON.stringify(data)
+			};
 		}
 	}
 
 	if (opts.fileType !== 'json') {
 		console.warn(`${opts.fileType} was not a recognised output type, so saving as JSON instead`);
 	}
-	return JSON.stringify(data);
+	return {
+		type: 'json',
+		data: JSON.stringify(data)
+	};
 
-}
-
-const getOutput = async (data, opts) => {
-	const outputString = await getOutputString(data, opts);
-	if (opts.outputEncoding == null) {
-		return outputString;
-	}
-	return Buffer.from(outputString, opts.outputEncoding);
 }
 
 module.exports.getOutput = getOutput;

@@ -8,11 +8,14 @@ const getValue = async (input) => {
 	return input;
 }
 
-module.exports = class RequestFactory {
+/**
+ * This class is made to handle generic rate-limit and stopping the app from spamming the server
+ */
+class RequestFactory {
 
 	constructor(opts) {
 
-		this._opts = opts;
+		this._opts = opts || {};
 
 		/** @type {number} */
 		this._rateLimitUntil = null;
@@ -22,7 +25,7 @@ module.exports = class RequestFactory {
 
 		this._currentOngoingRequests = 0;
 
-		this.axios = axios.create(this._opts?.axiosInstanceOptions);
+		this.axios = axios.create(this._opts.axiosInstanceOptions);
 
 	}
 
@@ -34,6 +37,10 @@ module.exports = class RequestFactory {
 	 */
 	request(axiosConfig, options) {
 
+		if (options == null) {
+			options = {};
+		}
+
 		return new Promise((res, rej) => {
 
 			if (axiosConfig == null) {
@@ -43,7 +50,7 @@ module.exports = class RequestFactory {
 
 			const obj = {res, rej, axiosConfig, options, failedAttempts: 0};
 
-			if (options?.doPriority) {
+			if (options.doPriority) {
 				this._queue.unshift(obj);
 			} else {
 				this._queue.push(obj);	
@@ -60,7 +67,7 @@ module.exports = class RequestFactory {
 		if (!Number.isFinite(millis) || millis < 0) {
 			millis = 5000;
 		}
-		const rateLimitSafetyPeriod = this._opts?.rateLimitSafetyPeriod ?? 500;
+		const rateLimitSafetyPeriod = this._opts.rateLimitSafetyPeriod || 500;
 		const newRateLimit = Date.now() + millis;
 		if (this._rateLimitUntil < newRateLimit) {
 			this._rateLimitUntil = newRateLimit + rateLimitSafetyPeriod;
@@ -113,7 +120,7 @@ module.exports = class RequestFactory {
 
 			// Check to see if we already have the maximum number of requests going on
 			const [maxOngoingRequests] = await Promise.all([
-				getValue(this._opts?.maxOngoingRequests)
+				getValue(this._opts.maxOngoingRequests)
 			]);
 			if (maxOngoingRequests != null && this._currentOngoingRequests >= maxOngoingRequests) {
 				return;
@@ -134,7 +141,7 @@ module.exports = class RequestFactory {
 
 			// Get any variables
 			const [authHeader] = await Promise.all([
-				headers['Authorization'] === undefined ? getValue(this._opts?.authHeader) : null, // Don't bother fetching the authHeader if we already have "Authorization" header set
+				headers['Authorization'] === undefined ? getValue(this._opts.authHeader) : null, // Don't bother fetching the authHeader if we already have "Authorization" header set
 			]);
 
 			// Set the authorization header if we got one back
@@ -151,15 +158,16 @@ module.exports = class RequestFactory {
 		} catch (e) {
 
 			errored = true;
-			resp = e?.response;
+			resp = e ? e.response : undefined;
 			err = e;
 
 		}
 
 		try {
 
+			const status = resp ? resp.status : undefined;
 			// TODO: To add more handling here
-			switch (resp?.status) {
+			switch (status) {
 
 				case 429: {
 					this._updateRateLimit(resp);
@@ -180,7 +188,7 @@ module.exports = class RequestFactory {
 							if (countAsAttemptOnFailure) {
 								next.failedAttempts += 1;
 							}
-							const maxAttempts = (await getValue(this._opts?.maxAttempts)) ?? 1;
+							const maxAttempts = (await getValue(this._opts.maxAttempts)) || 1;
 							if (next.failedAttempts >= maxAttempts) {
 								next.rej(err);
 							} else {
@@ -227,3 +235,5 @@ module.exports = class RequestFactory {
 	}
 
 }
+
+module.exports = RequestFactory;

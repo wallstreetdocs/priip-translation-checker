@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-const { checkTranslations } = require('../src/index.js');
+const { checkTranslations } = require('../src/main.js');
 
 //// You can run through the the translation checker as per the below:
 
@@ -15,10 +15,9 @@ checkTranslations({
 	showNonErrorsInJsonOutputAsNull: false,
 	correctLang: 'EN',
 	ignoreFormatting: true,
-	checkEditedSince: new Date('2022-12-01T13:49:00Z'),
-	outputEncoding: 'utf-8'
+	checkEditedSince: new Date('2022-12-01T13:49:00Z')
 }).then((output) => {
 
-	return fs.promises.writeFile('./out/out.csv', output);
+	return fs.promises.writeFile('./out/out.csv', output.data);
 
 }).catch(console.error);

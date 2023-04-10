@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-const { checkTranslations, getTranslationData } = require('../src/index.js');
+const { checkTranslations, getTranslationData } = require('../src/main.js');
 
 //// You can run through the the translation checker as per the below:
 
@@ -31,7 +31,6 @@ const main = async () => {
 		correctLang: 'EN',
 		ignoreFormatting: true,
 		checkEditedSince: new Date('2022-12-01T13:49:00Z'),
-		outputEncoding: 'utf-8',
 		translationData: JSON.parse(translationData)
 	});
 	

@@ -1,5 +1,5 @@
 
-const allLangs = ['BG', 'HR', 'CS', 'DA', 'NL', 'EN', 'ET', 'FI', 'FR', 'DE', 'EL', 'HU', 'IT', 'LT', 'NO', 'PL', 'PT', 'RO', 'RU', 'SK', 'SL', 'ES', 'SV'];
+const staticData = require('./static-data.js');
 
 const validateOptions = (opts) => {
 
@@ -81,12 +81,6 @@ const validateOptions = (opts) => {
 		errors.push(`If specified, "Check edited since" must be a date object`);
 	}
 
-	if (opts.outputEncoding == null) {
-		// do nothing
-	} else if (typeof opts.outputEncoding !== 'string') {
-		errors.push(`Output encoding must be a string, or null to have the output as a string, not ${opts.outputEncoding}`);
-	}
-
 	if (errors.length !== 0) {
 		throw new Error(`Input failed validation with the following messages:\n${errors.join('\n')}`);
 	}
@@ -98,7 +92,7 @@ const buildOptionsWithDefaults = (opts) => {
 	opts = {...opts};
 
 	if (opts.langs == null) {
-		opts.langs = allLangs;
+		opts.langs = staticData.allLangs;
 	}
 	if (opts.correctLang && !opts.langs.includes(opts.correctLang)) {
 		opts.langs = [opts.correctLang, ...opts.langs];

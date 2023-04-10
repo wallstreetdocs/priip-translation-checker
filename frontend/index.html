@@ -1,0 +1,81 @@
+<html>
+	<head>
+		<title>Priip Translations Checker</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="./main.js"></script>
+		<style>
+			table {
+				border-collapse: collapse;
+			}
+			#executeInputTable > tbody > tr > td {
+				padding: 5px;
+				border-bottom: 1px black solid;
+			}
+			#executeInputTable {
+				margin-bottom: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<table id="executeInputTable">
+			<tbody>
+				<tr>
+					<td>Override Access Token</td>
+					<td>
+						<textarea id="accessTokenInput" placeholder="Leave blank for default"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>Pool IDs (comma-separated)</td>
+					<td>
+						<input type="text" id="poolIdsInput" value="1"/>
+					</td>
+				</tr>
+				<tr>
+					<td>Filter TKs (by name, one-per-line)</td>
+					<td>
+						<textarea type="text" id="filterTKsByNameInput" placeholder="Blank for no filter"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>Filter TKs (by ID, comma-separated)</td>
+					<td>
+						<input type="text" id="filterTKsByIdInput" placeholder="Blank for no filter"/>
+					</td>
+				</tr>
+				<tr>
+					<td>Languages (comma-separated)</td>
+					<td>
+						<div><button type="button" onclick="toggleLanguageCheckboxes()">Toggle All</button></div>
+						<div id="languageCheckboxes"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>File Type</td>
+					<td>
+						<select id="fileTypeInput"><option value="csv">CSV</option><option value="json">JSON</option></select>
+					</td>
+				</tr>
+				<tr>
+					<td>Correct Language</td>
+					<td>
+						<select id="correctLangInput"><option value="">Master</option></select>
+					</td>
+				</tr>
+				<tr>
+					<td>Ignore Formatting</td>
+					<td>
+						<input type="checkbox" id="ignoreFormattingInput"/>
+					</td>
+				</tr>
+				<tr>
+					<td>Check errors since</td>
+					<td>
+						<input type="datetime-local" id="checkErrorsSinceInput"/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<button type="button" onclick="executeAndCatch()">Execute</button>
+	</body>
+</html>

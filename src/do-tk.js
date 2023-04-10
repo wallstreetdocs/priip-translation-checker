@@ -9,7 +9,7 @@ const doTk = (input, opts) => {
 	const id = input.id;
 	const poolId = input.poolId;
 	const lastModified = input.lastModified;
-	const correctXml = opts.correctLang == null ? input.master : input.languages[opts.correctLang]?.xml;
+	const correctXml = opts.correctLang == null ? input.master : (input.languages[opts.correctLang] || {}).xml; // Stupid line because "?." and "??" aren't supported
 	if (correctXml == null) {
 		throw new Error(`Could not find an xml for correct language ${opts.correctLang} to compare against`);
 	}
@@ -26,7 +26,7 @@ const doTk = (input, opts) => {
 			if (languageData == null || !languageData.xml) {
 				throw new EqualsError(correct, lang, 'Translation was empty');
 			}
-			if (opts?.checkEditedSince && languageData.lastModified < opts.checkEditedSince) {
+			if (opts && opts.checkEditedSince && languageData.lastModified < opts.checkEditedSince) {
 				throw new EqualsError(correct, lang, `Not been edited since ${new Date(languageData.lastModified).toISOString()}`);
 			}
 			const langDoc = libxmljs.parseXmlString(languageData.xml);
