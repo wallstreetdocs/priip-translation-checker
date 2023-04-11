@@ -110,11 +110,6 @@ const checkTranslationsFromReq = async (req) => {
 	input.accessToken = req.headers['authorization'];
 	input.origin = process.env.TRANSLATION_ORIGIN;
 
-	return {
-		type: 'csv',
-		data: 'test,test,test'
-	}
-
 	return checkTranslations(input);
 
 }
