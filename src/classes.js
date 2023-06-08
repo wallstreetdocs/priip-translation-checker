@@ -235,7 +235,9 @@ class Conditional extends Parent {
 	 */
 	constructor(el, lang, parent, opts) {
 
-		const dataIdx = typeof el.attr === 'function' ? el.attr('data-idx').value() : undefined;
+		const attr = typeof el.attr === 'function' ? el.attr('data-idx') : undefined;
+
+		const dataIdx = attr ? attr.value() : undefined;
 
 		let id = Number.parseInt(dataIdx);
 		if (isNaN(id)) {

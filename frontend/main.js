@@ -2,10 +2,6 @@
 // TODO - Change this as required
 const executeUrl = './execute';
 
-const getBearerToken = async () => {
-	// TODO - Do something to use the user's normal access token
-}
-
 var saveByteArray;
 
 function toggleLanguageCheckboxes() {
@@ -29,10 +25,27 @@ function getErrorMessage(err) {
 	return `${err}`;
 }
 
-function executeAndCatch() {
+let loadingCount = 0;
+function showLoading() {
+	loadingCount += 1;
+	if (loadingCount > 0) {
+		$('#loading-gif').show();
+	}
+}
+function hideLoading() {
+	loadingCount -= 1;
+	if (loadingCount <= 0) {
+		$('#loading-gif').hide();
+	}
+}
+
+function executeAndCatchWithLoading() {
+	showLoading();
 	execute().catch((err) => {
 		alert(`An error occurred, view the console for more details\n---\n${getErrorMessage(err)}`);
 		console.error(err);
+	}).finally(() => {
+		hideLoading();
 	});
 }
 
@@ -41,7 +54,7 @@ async function execute() {
 	// Access Token
 	let accessToken = $('#accessTokenInput').val();
 	if (!accessToken) {
-		accessToken = await getBearerToken();
+		accessToken = getBearerToken();
 	}
 
 	// Pool IDs
@@ -82,7 +95,7 @@ async function execute() {
 	const ignoreFormatting = $('#ignoreFormattingInput:checked').length > 0;
 
 	// Correct Language
-	const checkEditedSinceString = $('#checkErrorsSinceInput').val();
+	const checkEditedSinceString = $('#checkForEditsSinceInput').val();
 	const checkEditedSince = checkEditedSinceString ? new Date(checkEditedSinceString).toISOString() : null;
 
 	const input = {
@@ -96,6 +109,8 @@ async function execute() {
 		ignoreFormatting,
 		checkEditedSince
 	};
+
+	console.log('Posting to API with the following input:', input);
 
 	const output = await $.post({
 		url: executeUrl,
@@ -127,6 +142,7 @@ async function execute() {
 
 const documentIsReady = new Promise((res) => {
 	$(document).ready(() => {
+		redirectIfNoBearer();
 		res();
 	});
 }).then(() => {
@@ -153,6 +169,7 @@ Promise.all([langsPromise, documentIsReady]).then(([allLangs]) => {
 	let checkboxesHtml = '<table><tr>';
 	let correctLangHtml = '';
 	let counter = 0;
+	console.log(allLangs.langs);
 	for (const lang of allLangs.langs) {
 		checkboxesHtml += `<td><input type="checkbox" class="languageCheckbox" value="${lang}"/> ${lang}</td>`;
 		correctLangHtml += `<option${lang === 'EN' ? ' selected="true"' : ''} value="${lang}">${lang}</option>`;

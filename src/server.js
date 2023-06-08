@@ -33,6 +33,16 @@ router.post('/execute', express.json(), (req, res, next) => {
 
 });
 
+router.get('/bearer-functions.js', (req, res, next) => {
+
+	if (process.env.ALLOW_NON_LOGGED_IN === 'true') {
+		res.redirect(307, 'bearer-functions-local.js');
+	} else {
+		res.redirect(307, 'bearer-functions-online.js');
+	}
+
+});
+
 app.use('/translation-checker', router);
 
 module.exports.app = app;

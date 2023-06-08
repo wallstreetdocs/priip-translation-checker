@@ -75,10 +75,16 @@ const validateOptions = (opts) => {
 		errors.push(`Ignore formatting must be a boolean, not "${opts.ignoreFormatting}"`);
 	}
 
+	if (typeof opts.checkEditedSince === 'string') {
+		opts.checkEditedSince = new Date(opts.checkEditedSince);
+	}
+
 	if (opts.checkEditedSince == null) {
 		// do nothing
 	} else if (!(opts.checkEditedSince instanceof Date)) {
 		errors.push(`If specified, "Check edited since" must be a date object`);
+	} else if (isNaN(opts.checkEditedSince)) {
+		errors.push(`If specified, "Check edited since" must be a valid date`);
 	}
 
 	if (errors.length !== 0) {

@@ -2,6 +2,7 @@
 	<head>
 		<title>Priip Translations Checker</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="./bearer-functions.js"></script>
 		<script src="./main.js"></script>
 		<style>
 			table {
@@ -17,6 +18,8 @@
 		</style>
 	</head>
 	<body>
+		<img id="loading-gif" src="loading.gif" style="position: fixed; width: 40px; right: 10px; top: 10px; display: none;"/>
+		<p><a href="/translate/home">Back</a></p>
 		<table id="executeInputTable">
 			<tbody>
 				<tr>
@@ -69,13 +72,13 @@
 					</td>
 				</tr>
 				<tr>
-					<td>Check errors since</td>
+					<td>Check for edits since</td>
 					<td>
-						<input type="datetime-local" id="checkErrorsSinceInput"/>
+						<input type="datetime-local" id="checkForEditsSinceInput"/>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<button type="button" onclick="executeAndCatch()">Execute</button>
+		<button type="button" onclick="executeAndCatchWithLoading()">Execute</button>
 	</body>
 </html>

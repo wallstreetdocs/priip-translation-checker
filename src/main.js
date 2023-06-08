@@ -107,7 +107,11 @@ const checkTranslationsFromReq = async (req) => {
 	if (!input || typeof input !== 'object') {
 		throw new Error('No body could be found in the request');
 	}
-	input.accessToken = req.headers['authorization'];
+	/** @type {string} */
+	const authHeader = req.headers['authorization'] || '';
+	if (authHeader.startsWith('Bearer ')) {
+		input.accessToken = authHeader.slice(7);
+	}
 	input.origin = process.env.TRANSLATION_ORIGIN;
 
 	return checkTranslations(input);
