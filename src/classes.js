@@ -100,9 +100,8 @@ class Item {
 		if (typeof el.name === 'function') {
 			const name = el.name();
 			if (typeof name === 'string' && name.startsWith('wsd-')) {
-
+				return 'display';
 			}
-			return 'display';
 		}
 
 		return 'formatting';
@@ -267,7 +266,9 @@ class Display extends Item {
 
 		super(el, lang, parent, opts);
 
-		this.id = typeof el.attr === 'function' ? el.attr('data-tag-name').value() : undefined;
+		const attr = typeof el.attr === 'function' ? el.attr('data-tag-name') : undefined;
+
+		this.id = attr == null ? undefined : el.attr('data-tag-name').value();
 
 		if (!this.id) {
 			throw new Error('Found a display tag without a name');
