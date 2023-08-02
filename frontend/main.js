@@ -2,6 +2,50 @@
 // TODO - Change this as required
 const executeUrl = './execute';
 
+const publishRequestButton = document.querySelector("#publishRequestButton");
+const addTkButton = document.querySelector("#addTkButton");
+
+
+publishRequestButton.addEventListener("click", function (){
+    alert("Request Published.");
+
+})
+
+var tkList = []
+
+function AddTk() {
+    
+    tkList.push(document.querySelector("#tkID").value + ' - ' + document.querySelector("#poolID").value);
+    PopulateList(tkList);
+}
+
+function PopulateList(arr) {
+    LLen = arr.length;
+    
+    text = "<ul>";
+    for (i = 0; i < LLen; i++) {
+        text += "<li>" + arr[i] + "<input type='button' class='deleteTk' onclick='DeleteTk(" + i + ")' /></li>";
+    }
+    text += "</ul>";
+
+    document.getElementById("tkDisplay").innerHTML = text;
+
+}
+
+function DeleteTk(index) {
+    tkList.splice(index, 1);
+    PopulateList(tkList);
+}
+
+tkCount = 0;
+
+//Display the TK Display Div as a TK has been added
+addTkButton.addEventListener("click", function (){
+
+    const tkDisplay = document.querySelector("#tkDisplay");
+    tkDisplay.removeAttribute("hidden");
+    AddTk();
+})
 var saveByteArray;
 
 function toggleLanguageCheckboxes() {

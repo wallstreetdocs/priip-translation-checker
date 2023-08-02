@@ -1,0 +1,37 @@
+<!DOCTYPE html> 
+<html>
+    <head>
+        <title>New Request Form</title>
+        <link rel="stylesheet" href="style.css">
+
+    </head>
+    <body>
+        <h1>New Request</h1>
+        <form>
+            <div>
+                <label class="label1" for="Request Name">Request Name:</label><input type="text" id="requesetName" name="requestName"><br>
+                <label class="label1" for="Due Date">Due Date:</label><input type="date" id="dueDate" name="dueDate"><br>
+                <label class="label1" for="Notes">Notes:</label><textarea rows = "5" cols = "60" name = "notes"></textarea>
+            </div>
+            
+            <h4>Add TK</h4>
+            <label for="tkID">TK ID:</label>
+            <input type="text" id="tkID" name="tkID">
+            <label for="poolId">Pool ID:</label>
+            <input type="text" id="poolID" name="poolID"><button type="button" id="addTkButton">Add TK</button><br>
+
+            <div id="tkDisplay" hidden>
+            </div>
+            <br>
+
+            <h4>Select Translator(s):</h4><br>
+            <div id="translatorDisplay" hidden>
+                Translator
+            </div>
+            <br>
+            <button id="publishRequestButton" type="button">Publish Request</button>
+        </form>
+
+        <script src="main.js"></script>
+    </body>
+</html>
