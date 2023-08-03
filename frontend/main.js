@@ -14,7 +14,9 @@ publishRequestButton.addEventListener("click", function (){
 var tkList = []
 
 function AddTk() {
-    
+	//Display the TK Display Div as a TK has been added
+    const tkDisplay = document.querySelector("#tkDisplay");
+    tkDisplay.removeAttribute("hidden");
     tkList.push(document.querySelector("#tkID").value + ' - ' + document.querySelector("#poolID").value);
     PopulateList(tkList);
 }
@@ -37,15 +39,7 @@ function DeleteTk(index) {
     PopulateList(tkList);
 }
 
-tkCount = 0;
 
-//Display the TK Display Div as a TK has been added
-addTkButton.addEventListener("click", function (){
-
-    const tkDisplay = document.querySelector("#tkDisplay");
-    tkDisplay.removeAttribute("hidden");
-    AddTk();
-})
 var saveByteArray;
 
 function toggleLanguageCheckboxes() {
