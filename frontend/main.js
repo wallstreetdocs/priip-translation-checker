@@ -4,6 +4,12 @@ const executeUrl = './execute';
 
 var saveByteArray;
 
+function encodeHtml(string) {
+	return String(string).replace(/[\u00A0-\u9999<>\&]/g, function(i) {
+		return '&#'+i.charCodeAt(0)+';';
+	});
+}
+
 function toggleLanguageCheckboxes() {
 	if ($('.languageCheckbox:checked').length === 0) {
 		$('.languageCheckbox').prop('checked', true);
@@ -49,6 +55,32 @@ function executeAndCatchWithLoading() {
 	});
 }
 
+function showInWebpage(data, allLangs) {
+
+	let html = `<p>Correct lang: ${encodeHtml(data.correctLang)}</p>`;
+	html += '<table><thead><tr><th>Pool</th><th>ID</th><th>Name</th><th>Last Modified</th>';
+	for (const lang of allLangs) {
+		html += `<th>${encodeHtml(lang)}</th>`;
+	}
+	html += '</tr></thead><tbody>';
+	for (const output of Object.values(data.keys)) {
+		html += `<tr>`;
+		html += `<td>${encodeHtml(output.poolId)}</td>`;
+		html += `<td>${encodeHtml(output.id)}</td>`;
+		html += `<td>${encodeHtml(output.name)}</td>`;
+		html += `<td>${encodeHtml(new Date(output.lastModified).toLocaleString())}</td>`;
+		for (const lang of allLangs) {
+			const error = output.languages[lang];
+			if (error) {
+				html += `<td style="background-color: orange;">${encodeHtml(error.message)}<br/><i>${error.location}</i></td>`;
+			} else {
+				html += '<td></td>';
+			}
+		}
+	}
+	$('#output-table').html(html);
+}
+
 async function execute() {
 
 	// Access Token
@@ -83,7 +115,11 @@ async function execute() {
 	});
 
 	// File type
-	const fileType = $('#fileTypeInput').val();
+	const rawFileType = $('#fileTypeInput').val();
+	let fileType = rawFileType;
+	if (fileType === 'webpage') {
+		fileType = 'json';
+	}
 
 	// Non errors in json
 	const showNonErrorsInJsonOutputAsNull = false;
@@ -123,6 +159,11 @@ async function execute() {
 	});
 
 	const {langs: allLangs} = await langsPromise;
+
+	if (rawFileType === 'webpage') {
+		showInWebpage(JSON.parse(output), allLangs);
+		return;
+	}
 
 	let fileName = 'translations'
 	if (allLangs.length === langs.length) {

@@ -15,70 +15,76 @@
 			#executeInputTable {
 				margin-bottom: 10px;
 			}
+			#output-table td, #output-table th {
+				border: 1px solid black;
+			}
 		</style>
 	</head>
 	<body>
 		<img id="loading-gif" src="loading.gif" style="position: fixed; width: 40px; right: 10px; top: 10px; display: none;"/>
 		<p><a href="/translate/home">Back</a></p>
-		<table id="executeInputTable">
-			<tbody>
-				<tr>
-					<td>Override Access Token</td>
-					<td>
-						<textarea id="accessTokenInput" placeholder="Leave blank for default"></textarea>
-					</td>
-				</tr>
-				<tr>
-					<td>Pool IDs (comma-separated)</td>
-					<td>
-						<input type="text" id="poolIdsInput" value="1"/>
-					</td>
-				</tr>
-				<tr>
-					<td>Filter TKs (by name, one-per-line)</td>
-					<td>
-						<textarea type="text" id="filterTKsByNameInput" placeholder="Blank for no filter"></textarea>
-					</td>
-				</tr>
-				<tr>
-					<td>Filter TKs (by ID, comma-separated)</td>
-					<td>
-						<input type="text" id="filterTKsByIdInput" placeholder="Blank for no filter"/>
-					</td>
-				</tr>
-				<tr>
-					<td>Languages (comma-separated)</td>
-					<td>
-						<div><button type="button" onclick="toggleLanguageCheckboxes()">Toggle All</button></div>
-						<div id="languageCheckboxes"></div>
-					</td>
-				</tr>
-				<tr>
-					<td>File Type</td>
-					<td>
-						<select id="fileTypeInput"><option value="csv">CSV</option><option value="json">JSON</option></select>
-					</td>
-				</tr>
-				<tr>
-					<td>Correct Language</td>
-					<td>
-						<select id="correctLangInput"><option value="">Master</option></select>
-					</td>
-				</tr>
-				<tr>
-					<td>Ignore Formatting</td>
-					<td>
-						<input type="checkbox" id="ignoreFormattingInput"/>
-					</td>
-				</tr>
-				<tr>
-					<td>Check for edits since</td>
-					<td>
-						<input type="datetime-local" id="checkForEditsSinceInput"/>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<button type="button" onclick="executeAndCatchWithLoading()">Execute</button>
+		<div>
+			<table id="executeInputTable">
+				<tbody>
+					<tr>
+						<td>Override Access Token</td>
+						<td>
+							<textarea id="accessTokenInput" placeholder="Leave blank for default"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td>Pool IDs (comma-separated)</td>
+						<td>
+							<input type="text" id="poolIdsInput" value="1"/>
+						</td>
+					</tr>
+					<tr>
+						<td>Filter TKs (by name, one-per-line)</td>
+						<td>
+							<textarea type="text" id="filterTKsByNameInput" placeholder="Blank for no filter"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td>Filter TKs (by ID, comma-separated)</td>
+						<td>
+							<input type="text" id="filterTKsByIdInput" placeholder="Blank for no filter"/>
+						</td>
+					</tr>
+					<tr>
+						<td>Languages</td>
+						<td>
+							<div><button type="button" onclick="toggleLanguageCheckboxes()">Toggle All</button></div>
+							<div id="languageCheckboxes"></div>
+						</td>
+					</tr>
+					<tr>
+						<td>File Type</td>
+						<td>
+							<select id="fileTypeInput"><option value="webpage">Webpage</option><option value="csv">CSV</option><option value="json">JSON</option></select>
+						</td>
+					</tr>
+					<tr>
+						<td>Correct Language</td>
+						<td>
+							<select id="correctLangInput"><option value="">Master</option></select>
+						</td>
+					</tr>
+					<tr>
+						<td>Ignore Formatting</td>
+						<td>
+							<input type="checkbox" id="ignoreFormattingInput"/>
+						</td>
+					</tr>
+					<tr>
+						<td>Check for edits since</td>
+						<td>
+							<input type="datetime-local" id="checkForEditsSinceInput"/>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<button type="button" onclick="executeAndCatchWithLoading()">Execute</button>
+		</div>
+		<div id="output-table"></div>
 	</body>
 </html>
